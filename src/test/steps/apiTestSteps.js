@@ -4,19 +4,11 @@ const APIUtils = require("../../framework/utils/apiUtils/index.js");
 const { StatusCodes } = require("http-status-codes");
 const expectedPostsData = require("../testData/posts.js");
 const expectedUsersData = require("../testData/users.js");
+const randomData = require("../testData/randomData.js");
 let chai = require('chai');
 chai.use(require('chai-json'));
 const EMPTY_BODY = {};
 let _ = require('lodash');
-
-function getPostBody(userIdKey, valueUserId, titleKey, randomPostTitle, bodyKey, randomPostBody){
-  let bodyWithUserIdTitleBody = {
-    [`${userIdKey}`]: valueUserId,
-    [`${titleKey}`]: randomPostTitle,
-    [`${bodyKey}`]: randomPostBody,
-  }
-  return bodyWithUserIdTitleBody;
-};
 
 $baseURL = new APIUtils("https://jsonplaceholder.typicode.com");
 
@@ -97,11 +89,10 @@ When(/^the user send get request to '(.*)'$/, async function (endpoint) {
     }
   );
 
-  When(/^the user send post request to '(.*)' with '(.*)' equals '(.*)', '(.*)' equals '(.*)', '(.*)' equals '(.*)'$/, 
-  async function (endpoint, userIdKey, userIdValue, titleKey, titleValue, bodyKey, bodyValue) {
-    let postRequestBody = getPostBody(userIdKey, userIdValue, titleKey, titleValue, bodyKey, bodyValue);
+  When(/^the user send post request '(.*)' with userId '(.*)' with random values$/, 
+  async function (endpoint, userIdValue) {
     const requestUrl = endpoint;
-    const response = await $baseURL.postRequest(requestUrl, postRequestBody);
+    const response = await $baseURL.postRequest(requestUrl, randomData);
     this.sharedStatusCode = response.status;
     this.sharedResponseBody = response.data;
     this.sentId = userIdValue;
@@ -142,13 +133,16 @@ When(/^the user send get request to '(.*)'$/, async function (endpoint) {
   Then(
     /^the '(.*)' response contain the correct information for '(.*)' id$/,
     async function (usersKey, idValue) {
-    expectChai(_.isEqual(expectedUsersData[idValue-1], this.responseData[idValue-1])).to.be.true;
+    let addressIsEqual = _.isEqual(expectedUsersData[idValue-1].address, this.responseData[idValue-1].address);
+    let geoIsEqual = _.isEqual(expectedUsersData[idValue-1].address.geo, this.responseData[idValue-1].address.geo);
+    let companyIsEqual = _.isEqual(expectedUsersData[idValue-1].company, this.responseData[idValue-1].company);
+    expectChai(addressIsEqual&&geoIsEqual&&companyIsEqual).to.be.true;
     }
   );
 
   Then(
     /^the '(.*)' response contain the correct information for users id is '(.*)'$/,
     async function (usersKey, idValue) {
-    expectChai(_.isEqual(expectedUsersData[idValue-1], this.responseData)).to.be.true;
+    expectChai(_.isEqual(expectedUsersData[idValue-1].id, this.responseData.id)).to.be.true;
     }
   );
