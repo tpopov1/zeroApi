@@ -133,16 +133,16 @@ When(/^the user send get request to '(.*)'$/, async function (endpoint) {
   Then(
     /^the '(.*)' response contain the correct information for '(.*)' id$/,
     async function (usersKey, idValue) {
-    let addressIsEqual = _.isEqual(expectedUsersData[idValue-1].address, this.responseData[idValue-1].address);
-    let geoIsEqual = _.isEqual(expectedUsersData[idValue-1].address.geo, this.responseData[idValue-1].address.geo);
-    let companyIsEqual = _.isEqual(expectedUsersData[idValue-1].company, this.responseData[idValue-1].company);
-    expectChai(addressIsEqual&&geoIsEqual&&companyIsEqual).to.be.true;
+      let expectedObject = expectedUsersData.filter(el => el.id == idValue);
+      let actualObject = this.responseData.filter(el => el.id == idValue);
+      expectChai(_.isEqual(expectedObject, actualObject)).to.be.true;
     }
   );
 
   Then(
     /^the '(.*)' response contain the correct information for users id is '(.*)'$/,
     async function (usersKey, idValue) {
-    expectChai(_.isEqual(expectedUsersData[idValue-1].id, this.responseData.id)).to.be.true;
+    let realIndex = expectedUsersData.findIndex(el => el.id == idValue);
+    expectChai(_.isEqual(expectedUsersData[realIndex].id, this.responseData.id)).to.be.true;
     }
   );

@@ -35,7 +35,7 @@ Feature: JSON Placeholder
     And the post response 'body' is match 'randomPostBody'
 
   @automated
-  Scenario: Scenario Outline name: Send GET request to get users (/users).
+  Scenario: Send GET request to get users (/users).
 
     When the user send get request to '/users'
     Then the API status code should be 200 - OK
